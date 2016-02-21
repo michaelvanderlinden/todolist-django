@@ -1,20 +1,25 @@
+#files.py
+import re
 from django import forms
-from todos.models import UserProfile
 from django.contrib.auth.models import User
-
-
-class UserProfileForm(forms.ModelForm):
-    password = forms.CharField(required=True, widget=forms.PasswordInput())
-    user = forms.CharField(required=True, label='Username')
-    firstname = forms.CharField(required=True, label='First Name')
-    lastname = forms.CharField(required=True, label='Last Name')
-    email = forms.CharField(required=True, label='email')
-    password_confirmation = forms.CharField(required=True, widget=forms.PasswordInput())
-    
-    class Meta:
-        model = UserProfile
-        fields = ('user','firstname', 'lastname', 'email', 'password', 'password_confirmation')
-        
-        
-        
-#class login_form
+from django.utils.translation import ugettext_lazy as _
+ 
+class RegistrationForm(forms.Form):
+ 
+    username = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Username"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
+    email = forms.EmailField(widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Email address"))
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs=dict(required=True, max_length=30, render_value=False)), label=_("Password"))
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs=dict(required=True, max_length=30, render_value=False)), label=_("Password (again)"))
+ 
+    def clean_username(self):
+        try:
+            user = User.objects.get(username__iexact=self.cleaned_data['username'])
+        except User.DoesNotExist:
+            return self.cleaned_data['username']
+        raise forms.ValidationError(_("The username already exists. Please try another one."))
+ 
+    def clean(self):
+        if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
+            if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+                raise forms.ValidationError(_("The two password fields did not match."))
+        return self.cleaned_data
