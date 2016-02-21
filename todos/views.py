@@ -8,21 +8,13 @@ from django.template import context
 
 # Create your views here
 
-def index(request):
-    template = loader.get_template('todos/index.html')
-    return render(request, 'todos/index.html')
-    
-def dashboard(request):
-    template = loader.get_template('todos/dashboard.html')
-    return render(request, 'todos/dashboard.html')
 
-
-
-#views.py
 from todos.forms import *
+from todos.forms import TaskForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.views.decorators.csrf import csrf_protect
+from todos.models import Task
  
 @csrf_protect
 def register(request):
@@ -57,7 +49,21 @@ def logout_page(request):
  
 @login_required
 def home(request):
+    context = RequestContext(request)
+    task_list = Task.objects.all()
+    context_dict = {'tasks': task_list}
+    form = TaskForm()
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = Task.objects.create_task(
+            title=form.cleaned_data['title'],
+            ownerid={{ user.username }},
+            description=form.cleaned_data['description']
+            )
+            return HttpResponseRedirect('/home/')
+    
     return render_to_response(
-    'home.html',
-    { 'user': request.user }
-    )
+        'home.html', context_dict, context, {'form': form}
+        )
+    

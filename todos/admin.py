@@ -1,7 +1,8 @@
 from django.contrib import admin
-
+from django.db import models
+from django.contrib.auth.models import User
 # Register your models here.
 
-from todos.models import UserProfile #, tasks, othermodel, model4
+from todos.models import Task
 
-admin.site.register(UserProfile)
+admin.site.register(Task)

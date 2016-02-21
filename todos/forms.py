@@ -23,3 +23,12 @@ class RegistrationForm(forms.Form):
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError(_("The two password fields did not match."))
         return self.cleaned_data
+        
+        
+        
+        
+class TaskForm(forms.Form):
+ 
+    title = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs=dict(required=True, max_length=500)), label=_("Task Name"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
+    description = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs=dict(required=False, max_length=5000)), label=_("Description"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
+    

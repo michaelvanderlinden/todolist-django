@@ -3,5 +3,47 @@
 {% block head %}Your Todos{% endblock %}
 {% block content %}
     <p>Welcome {{ user.username }}!</p>
+    {% if tasks %}
+            <ul>
+                {% for task in tasks %}
+                {% if user == task.ownerid %}
+                    <strong>{{ task.title }}</strong>
+                    <li>Owned by {{ task.ownerid }}</li>
+                    <li>{{ task.description }}</li>
+                    <li>{{ task.collaborators }}</li>
+                    {% if user == task.ownerid %}
+                            You are the owner.
+                    {% else %}
+                            You are not the owner.
+                    {% endif %}
+                {% else %}
+                {% endif %}    
+                <br>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <strong>You have no tasks to do.</strong>
+        {% endif %}
+        
+    <br>
+    <h3>Create new task</h3>
+    
+    <form action="/home/" method="post" 
+                enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <!-- Display each form. The as_p method wraps each element in a paragraph
+                 (<p>) element. This ensures each element appears on a new line,
+                 making everything look neater. -->
+            {{ form.as_p }}
+
+            <!-- Provide a button to click to submit the form. -->
+            <input type="submit" name="submit" value="Create Task" />
+    </form>
+    
+        
+    <br>
     <a href="/logout/">Logout</a>
+    
 {% endblock %}
