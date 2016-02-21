@@ -10,7 +10,6 @@
                     <strong>{{ task.title }}</strong>
                     <li>Owned by {{ task.ownerid }}</li>
                     <li>{{ task.description }}</li>
-                    <li>{{ task.collaborators }}</li>
                     {% if user == task.ownerid %}
                             You are the owner.
                     {% else %}
